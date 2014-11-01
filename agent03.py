@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 r'''
-Implementation of the agent algorithm in table 23 of the IDEAL MOOC lessons, with
-modifications required in the programming assignment.
+Implementation of the agent algorithm in tables 33-1 and 33-2 of the IDEAL MOOC
+lessons, with modifications required in the programming assignment.
 
-For details see http://liris.cnrs.fr/ideal/mooc/lesson.php?n=023
+For details see http://liris.cnrs.fr/ideal/mooc/lesson.php?n=033
 '''
 
 from collections import namedtuple
@@ -52,6 +52,9 @@ class Environment30(object):
 
 
 class Environment31(object):
+    r'''An environment where the relation between experiments ans results is switched
+        after a number of turns, and then switched after after some more turns.
+    '''
     def __init__(self, t1 = 8, t2 = 15):
         self.clock = 0
         self.t1 = t1
@@ -84,16 +87,9 @@ class Agent(object):
         self.context = None
         self.mood = Pleased
 
-    def anticipate(self):
-        r'''Returns a list of next likely interactions (according to this agent's own previous
-            experience) given the last enacted interaction, or None if such a list does not
-            yet exist.
-        '''
-        return self.composites.get(self.context, None)
-
     def another(self, experiments, fallback = None):
         r'''Returns an experiment not in the given collection, or the fall back experiment
-        if one couldn't be found among this agent's known experiments.
+            if one couldn't be found among this agent's known experiments.
         '''
         for e in self.__experiments:
             if not e in experiments:
@@ -101,9 +97,16 @@ class Agent(object):
 
         return fallback
 
+    def anticipate(self):
+        r'''Returns a list of next likely interactions (according to this agent's own previous
+            experience) given the last enacted interaction, or None if such a list does not
+            yet exist.
+        '''
+        return self.composites.get(self.context, None)
+
     def select(self, anticipations):
-        r'''Given a list of anticipated interactions, look for an interaction of positive
-            valence and return its associated experiment. If none could be found, return
+        r'''Given a list of anticipated interactions, looks for an interaction of positive
+            valence and returns its associated experiment. If none could be found, returns
             an experiment not associated to any of the anticipated interactions.
         '''
         for anticipated in anticipations:
@@ -116,7 +119,7 @@ class Agent(object):
         return self.another({a.experiment for a in anticipations}, anticipated.experiment)
 
     def experiment(self):
-        r'''Select the next experiment to perform.
+        r'''Selects the next experiment to perform.
         '''
         anticipations = self.anticipate()
         if anticipations != None:
